@@ -8,11 +8,11 @@ To install this module use [npm](http://npmjs.org/) as usual:
 
     $ npm install cradle_security
 
-    or
+or
 
     $ npm install cradle_security --save-dev
 
-    if you want to run tests.
+if you want to run tests.
 
 ## Usage
 
