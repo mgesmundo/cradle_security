@@ -1,0 +1,1 @@
+module.exports = require('./src/cradle_security.js');
