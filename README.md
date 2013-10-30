@@ -1,6 +1,6 @@
 # Cradle Security
 
-This module is a simple extension of the [Cradle][1] module for [CouchDB]() database.
+This module is a simple extension of the [Cradle][1] module for [CouchDB](http://couchdb.apache.org) database.
 
 ## Install
 
@@ -60,7 +60,9 @@ To install this module use [npm](http://npmjs.org/) as usual:
         [ "admins" ],               // array of roles
         function (err, res) {       // callback
             console.log(res);       // it should seem
-                                    // { ok: true, id: 'org.couchdb.user:new_user', rev: '1-83d5aba64688501431753b7cc13d7578' }
+                                    // { ok: true, id:
+                                    // 'org.couchdb.user:new_user',
+                                    // rev: '1-83d5aba64688501431753b7cc13d7578' }
                                     // if no error occurred
         }
     );
@@ -71,7 +73,9 @@ To install this module use [npm](http://npmjs.org/) as usual:
         "new_user",                 // username
         function (err, res) {       // callback
         console.log(res);           // it should seem
-                                    // { ok: true, id: 'org.couchdb.user:new_user', rev: '2-645980a99208ef5902cb216e5a49526e' }
+                                    // { ok: true, id:
+                                    // 'org.couchdb.user:new_user',
+                                    // rev: '2-645980a99208ef5902cb216e5a49526e' }
                                     // if no error occurred
         }
     );
