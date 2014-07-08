@@ -52,7 +52,7 @@ describe('Cradle Security test', function () {
       host: '127.0.0.1',
       port: 5984,
       cache: true,
-      timeout: 5000
+      timeout: 500
     });
     conn = new (couchDB.Connection)({
       auth: {
@@ -81,23 +81,43 @@ describe('Cradle Security test', function () {
   });
   it('should create a new database with existing user', function (done) {
     db = conn.database(dbName);
-    db.exists(function (err, exists) {
-      if (!exists) {
-        db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
-          res.ok.should.true;
-          done();
-        });
-      }
+    db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+      res.ok.should.true;
+      done();
+    });
+  });
+  it('shouldn\'t create an existing database', function (done) {
+    db = conn.database(dbName);
+    db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+      should.not.exist(res);
+      err.error.should.equal('file_exists');
+      done();
     });
   });
   it('should delete database', function (done) {
     db = conn.database(dbName);
     db.destroy(done);
   });
+  it('shouldn\'t add an existing  user', function (done) {
+    db = conn.database(dbName);
+    db.addUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+      should.not.exist(res);
+      err.error.should.equal('user_exists');
+      done();
+    });
+  });
   it('should delete user', function (done) {
     db = conn.database(dbName);
     db.delUser(dbUsername, function (err, res) {
       res.ok.should.true;
+      done();
+    });
+  });
+  it('shouldn\'t delete a non existing user', function (done) {
+    db = conn.database(dbName);
+    db.delUser(dbUsername, function (err, res) {
+      should.not.exist(res);
+      err.error.should.equal('not_found');
       done();
     });
   });
