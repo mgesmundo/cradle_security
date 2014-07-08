@@ -50,6 +50,10 @@ module.exports = function (config) {
      */
     my.config = {
         /**
+         * @cfg {String} [name='cradle-security'] Module name to show in logs
+         */
+        name: '[cradle-security]',
+        /**
          * @cfg {Boolean} [debug = false] Set true if you want trace running module
          */
         debug: false,
@@ -83,6 +87,7 @@ module.exports = function (config) {
 
     var debug  = my.config.debug;
     var logger = my.config.logger;
+    var mName  = my.config.name;
 
     // empty function
     var emptyFn = function () {};
@@ -165,6 +170,7 @@ module.exports = function (config) {
      * @param {Object} callback.res Response of the operation
      */
     couchDB.Database.prototype.addUser = function (username, password, roles, callback) {
+        var self = this;
         var userDb = this.connection.database('_users');
         // add user if it does not exists
         var realName = util.format('%s%s', userPrefix, username);
@@ -177,11 +183,10 @@ module.exports = function (config) {
                     type: 'user'
                 }, function (err, res) {
                     if (logger) {
-                        logger.info(res);
                         if (err) {
-                            logger.error(util.format('Error during creation of %s user', username), err);
+                            logger.error('%s unable to create "%s" user on "%s" database due the error %s', mName, username, self.name, err.code);
                         } else {
-                            logger.info(util.format('User %s created', username));
+                            logger.info('%s user "%s" created on "%s" database', mName, username, self.name);
                         }
                     }
                     return callback(err, res);
@@ -200,15 +205,15 @@ module.exports = function (config) {
      * @param {Object} callback.res Response of the operation
      */
     couchDB.Database.prototype.delUser = function (username, callback) {
+        var self = this;
         var userDb = this.connection.database('_users');
         var realName = util.format('%s%s', userPrefix, username);
         userDb.remove(realName, function (err, res) {
             if (logger) {
-                logger.info(res);
                 if (err) {
-                    logger.error(util.format('Error during deletion of %s user', username), err);
+                    logger.error('%s unable to delete "%s" user on "%s" database due the error %s', mName, username, self.name, err.code);
                 } else {
-                    logger.info(util.format('User %s deleted', username));
+                    logger.info('%s user "%s" deleted on "%s" database', mName, username, self.name);
                 }
             }
             return callback(err, res);
@@ -232,11 +237,10 @@ module.exports = function (config) {
             validate_doc_update: doc_auth
         }, function (err, res) {
             if (logger) {
-                logger.info(res);
                 if (err) {
-                    logger.error(util.format('Error during security document creation on %s database', self.name), err);
+                    logger.error('%s unable to create the security document on "%s" database due the error %s', mName, self.name, err.code);
                 } else {
-                    logger.info(util.format('Security document created on %s database', self.name));
+                    logger.info('%s security document created on "%s" database', mName, self.name);
                 }
             }
             return callback(err, res);
@@ -265,11 +269,12 @@ module.exports = function (config) {
             }
         }, function (err, res) {
             if (logger) {
-                logger.info(res);
                 if (err) {
-                    logger.error(util.format('Error during roles creation on %s database', self.name), err);
+                    logger.error('%s unable to create "%s" admin roles and/or "%s" readers roles on "%s" database due the error %s',
+                        mName, adminRoles.join(', '), memberRoles.join(', '), self.name, err.code);
                 } else {
-                    logger.info(util.format('Roles created on %s database', self.name));
+                    logger.info('%s "%s" admin roles and "%s" readers roles created on "%s" database',
+                        mName, adminRoles.join(', '), memberRoles.join(', '), self.name);
                 }
             }
             return callback(err, res);
@@ -294,7 +299,7 @@ module.exports = function (config) {
         self.create(function (errDb, resDb) {
             if (logger) {
                 if (errDb) {
-                    logger.error(util.format('Error during %s database creation', self.name), errDb);
+                    logger.error('%s unable to create "%s" database due the error %s', mName, self.name, errDb.code);
                 }
             }
             if (errDb) {
@@ -329,9 +334,9 @@ module.exports = function (config) {
                 }, function (err, res) {
                     if (logger) {
                         if (err) {
-                            logger.error(util.format('Error during %s database creation', self.name), err);
+                            logger.error('%s unable to create "%s" database due the error %s', mName, self.name, err.code);
                         } else {
-                            logger.info(util.format('Database %s created', self.name));
+                            logger.info('%s database "%s" created', mName, self.name);
                         }
                     }
                     if (err) {
