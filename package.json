@@ -1,41 +1,41 @@
 {
-    "name": "cradle_security",
-    "version": "0.2.0",
-    "description": "Add users, roles and authorization creation commands to Cradle module",
-    "preferGlobal": false,
-    "main": "index.js",
-    "scripts": {
-        "test": "mocha"
-    },
-    "dependencies" : {
-        "cradle": "^0.6.7",
-        "object_utils": ">=0.1.0",
-        "async": "^0.9.0"
-    },
-    "analyze": false,
-    "devDependencies": {
-        "mocha": "^1.20.1",
-        "should": "^4.0.4"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mgesmundo/cradle_security"
-    },
-    "bugs": {
-        "url": "https://github.com/mgesmundo/cradle_security/issues"
-    },
-    "keywords": [
-        "couchdb",
-        "couch",
-        "database",
-        "cradle",
-        "users",
-        "roles",
-        "security"
-    ],
-    "author": "Marcello Gesmundo",
-    "license": "MIT",
-    "engines": {
-        "node": ">=0.8"
-    }
+  "name": "cradle_security",
+  "version": "0.2.0",
+  "description": "Add users, roles and authorization creation commands to Cradle module",
+  "preferGlobal": false,
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies" : {
+    "cradle": "^0.6.7",
+    "object_utils": ">=0.1.0",
+    "async": "^0.9.0"
+  },
+  "analyze": false,
+  "devDependencies": {
+    "mocha": "^1.20.1",
+    "should": "^4.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mgesmundo/cradle_security"
+  },
+  "bugs": {
+    "url": "https://github.com/mgesmundo/cradle_security/issues"
+  },
+  "keywords": [
+    "couchdb",
+    "couch",
+    "database",
+    "cradle",
+    "users",
+    "roles",
+    "security"
+  ],
+  "author": "Marcello Gesmundo",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.8"
+  }
 }

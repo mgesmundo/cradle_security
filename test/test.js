@@ -36,9 +36,9 @@ var adminUsername = "admin";
 var adminPassword = "admin";
 var should = require('should');
 var couchDB = require('../index.js')({
-    debug: true,
-    adminUsername: adminUsername,     // set your admin username
-    adminPassword: adminPassword      // set your admin password
+  debug: true,
+  adminUsername: adminUsername,     // set your admin username
+  adminPassword: adminPassword      // set your admin password
 });
 var conn;
 var db;
@@ -47,58 +47,58 @@ var dbUsername = "test_user";
 var dbUserPassword = "password";
 
 describe('Cradle Security test', function () {
-    it('should open a new DB connection', function (done) {
-        couchDB.setup({
-            host: '127.0.0.1',
-            port: 5984,
-            cache: true,
-            timeout: 5000
+  it('should open a new DB connection', function (done) {
+    couchDB.setup({
+      host: '127.0.0.1',
+      port: 5984,
+      cache: true,
+      timeout: 5000
+    });
+    conn = new (couchDB.Connection)({
+      auth: {
+        username: adminUsername,
+        password: adminPassword
+      }
+    });
+    // small test because cradle has his test
+    should.exists(conn);
+    done();
+  });
+  it('should create a new database with new user', function (done) {
+    db = conn.database(dbName);
+    db.exists(function (err, exists) {
+      if (!exists) {
+        db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+          res.ok.should.true;
+          done();
         });
-        conn = new (couchDB.Connection)({
-            auth: {
-                username: adminUsername,
-                password: adminPassword
-            }
+      }
+    });
+  });
+  it('should delete database', function (done) {
+    db = conn.database(dbName);
+    db.destroy(done);
+  });
+  it('should create a new database with existing user', function (done) {
+    db = conn.database(dbName);
+    db.exists(function (err, exists) {
+      if (!exists) {
+        db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+          res.ok.should.true;
+          done();
         });
-        // small test because cradle has his test
-        should.exists(conn);
-        done();
+      }
     });
-    it('should create a new database with new user', function (done) {
-        db = conn.database(dbName);
-        db.exists(function (err, exists) {
-            if (!exists) {
-                db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
-                    res.ok.should.true;
-                    done();
-                });
-            }
-        });
+  });
+  it('should delete database', function (done) {
+    db = conn.database(dbName);
+    db.destroy(done);
+  });
+  it('should delete user', function (done) {
+    db = conn.database(dbName);
+    db.delUser(dbUsername, function (err, res) {
+      res.ok.should.true;
+      done();
     });
-    it('should delete database', function (done) {
-        db = conn.database(dbName);
-        db.destroy(done);
-    });
-    it('should create a new database with existing user', function (done) {
-        db = conn.database(dbName);
-        db.exists(function (err, exists) {
-            if (!exists) {
-                db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
-                    res.ok.should.true;
-                    done();
-                });
-            }
-        });
-    });
-    it('should delete database', function (done) {
-        db = conn.database(dbName);
-        db.destroy(done);
-    });
-    it('should delete user', function (done) {
-        db = conn.database(dbName);
-        db.delUser(dbUsername, function (err, res) {
-            res.ok.should.true;
-            done();
-        });
-    });
+  });
 });
