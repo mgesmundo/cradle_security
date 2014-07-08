@@ -184,12 +184,18 @@ module.exports = function (config) {
         }, function (err, res) {
           if (logger) {
             if (err) {
-              logger.error('%s unable to create "%s" user on "%s" database due the error %s', mName, username, self.name, err.code);
+              logger.error('%s unable to create "%s" user on "%s" database due the error %s', mName, username, self.name, err.error.toUpperCase());
             } else {
               logger.info('%s "%s" user created on "%s" database', mName, username, self.name);
             }
           }
           return callback(err, res);
+        });
+      } else {
+        logger.error('%s unable to create "%s" user on "%s" database due the error %s', mName, username, self.name, 'USER_EXISTS');
+        return callback({
+          error: 'user_exists',
+          reason: 'The user could not be created because it already exists.'
         });
       }
     });
@@ -211,7 +217,7 @@ module.exports = function (config) {
     userDb.remove(realName, function (err, res) {
       if (logger) {
         if (err) {
-          logger.error('%s unable to delete "%s" user on "%s" database due the error %s', mName, username, self.name, err.code);
+          logger.error('%s unable to delete "%s" user on "%s" database due the error %s', mName, username, self.name, err.error.toUpperCase());
         } else {
           logger.info('%s "%s" user deleted on "%s" database', mName, username, self.name);
         }
@@ -238,7 +244,7 @@ module.exports = function (config) {
     }, function (err, res) {
       if (logger) {
         if (err) {
-          logger.error('%s unable to create "_design/_auth" security document on "%s" database due the error %s', mName, self.name, err.code);
+          logger.error('%s unable to create "_design/_auth" security document on "%s" database due the error %s', mName, self.name, err.error.toUpperCase());
         } else {
           logger.info('%s "_design/_auth" security document created on "%s" database', mName, self.name);
         }
@@ -271,7 +277,7 @@ module.exports = function (config) {
       if (logger) {
         if (err) {
           logger.error('%s unable to create "%s" admin roles and/or "%s" readers roles on "%s" database due the error %s',
-            mName, adminRoles.join(', '), memberRoles.join(', '), self.name, err.code);
+            mName, adminRoles.join(', '), memberRoles.join(', '), self.name, err.error.toUpperCase());
         } else {
           logger.info('%s "%s" admin roles and "%s" readers roles created on "%s" database',
             mName, adminRoles.join(', '), memberRoles.join(', '), self.name);
@@ -299,7 +305,7 @@ module.exports = function (config) {
     self.create(function (errDb, resDb) {
       if (logger) {
         if (errDb) {
-          logger.error('%s unable to create "%s" database due the error %s', mName, self.name, errDb.code);
+          logger.error('%s unable to create "%s" database due the error %s', mName, self.name, errDb.error.toUpperCase());
         }
       }
       if (errDb) {
@@ -334,7 +340,7 @@ module.exports = function (config) {
         }, function (err, res) {
           if (logger) {
             if (err) {
-              logger.error('%s unable to create "%s" database due the error %s', mName, self.name, err.code);
+              logger.error('%s unable to create "%s" database due the error %s', mName, self.name, err.error.toUpperCase());
             } else {
               logger.info('%s "%s" database created', mName, self.name);
             }
