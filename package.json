@@ -1,6 +1,6 @@
 {
   "name": "cradle_security",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Add users, roles and authorization creation commands to Cradle module",
   "preferGlobal": false,
   "main": "index.js",
