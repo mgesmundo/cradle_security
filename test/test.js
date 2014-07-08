@@ -75,16 +75,30 @@ describe('Cradle Security test', function () {
             }
         });
     });
+    it('should delete database', function (done) {
+        db = conn.database(dbName);
+        db.destroy(done);
+    });
+    it('should create a new database with existing user', function (done) {
+        db = conn.database(dbName);
+        db.exists(function (err, exists) {
+            if (!exists) {
+                db.createWithUser(dbUsername, dbUserPassword, [ "admins" ], function (err, res) {
+                    res.ok.should.true;
+                    done();
+                });
+            }
+        });
+    });
+    it('should delete database', function (done) {
+        db = conn.database(dbName);
+        db.destroy(done);
+    });
     it('should delete user', function (done) {
         db = conn.database(dbName);
         db.delUser(dbUsername, function (err, res) {
             res.ok.should.true;
             done();
         });
-    });
-    it('should delete database', function (done) {
-        db = conn.database(dbName);
-        db.destroy(dbName);
-        done();
     });
 });

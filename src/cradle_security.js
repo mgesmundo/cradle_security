@@ -37,6 +37,7 @@ module.exports = function (config) {
     var utils   = require('object_utils');
     var util    = require('util');
     var couchDB = require('cradle');
+    var async   = require('async');
 
     // namespace
     var my = {};
@@ -289,36 +290,9 @@ module.exports = function (config) {
     couchDB.Database.prototype.createWithUser = function (username, password, roles, callback) {
         // create new database
         var self = this;
-        var err,
-            res,
-            resDbCreated,
-            totalCallbacks = 0,
-            maxCallbacks = 3;
-
-        function callbackManager(taskErr, taskRes) {
-            err = taskErr || err;
-            res = taskRes || err;
-            totalCallbacks++;
-            if (totalCallbacks === maxCallbacks) {
-                if (logger) {
-                    logger.info(res);
-                    if (err) {
-                        logger.error(util.format('Error during %s database creation', self.name), err);
-                    } else {
-                        logger.info(util.format('Database %s created', self.name));
-                    }
-                }
-                if (err) {
-                    callback(err, res);
-                } else {
-                    callback(err, resDbCreated);
-                }
-            }
-        }
 
         self.create(function (errDb, resDb) {
             if (logger) {
-                logger.info(resDb);
                 if (errDb) {
                     logger.error(util.format('Error during %s database creation', self.name), errDb);
                 }
@@ -326,14 +300,46 @@ module.exports = function (config) {
             if (errDb) {
                 callback(errDb, resDb);
             } else {
-                resDbCreated = resDb;
-                totalCallbacks = 0;
-                // add user to couchdb users
-                self.addUser(username, password, roles, callbackManager);
-                // add roles
-                self.addRoles(my.config.adminRoles, my.config.memberRoles, callbackManager);
-                // add authorization
-                self.addAuthorization(callbackManager);
+                async.parallel({
+                    roles:  function (cb) {
+                        // add roles
+                        self.addRoles(my.config.adminRoles, my.config.memberRoles, cb);
+                    },
+                    user: function (cb) {
+                        var userDb = self.connection.database('_users');
+                        // add user if it does not exists
+                        var realName = util.format('%s%s', userPrefix, username);
+                        userDb.get(realName, function (userErr, userDoc) {
+                            if (!userDoc) {
+                                // add user to couchdb users
+                                self.addUser(username, password, roles, cb);
+                            } else {
+                                cb(null, {
+                                    ok: true,
+                                    id: userDoc._id,
+                                    rev: userDoc._rev
+                                });
+                            }
+                        });
+                    },
+                    auth: function (cb) {
+                        // add authorization
+                        self.addAuthorization(cb);
+                    }
+                }, function (err, res) {
+                    if (logger) {
+                        if (err) {
+                            logger.error(util.format('Error during %s database creation', self.name), err);
+                        } else {
+                            logger.info(util.format('Database %s created', self.name));
+                        }
+                    }
+                    if (err) {
+                        callback(err, res);
+                    } else {
+                        callback(err, {ok: true});
+                    }
+                });
             }
         });
     };
